@@ -138,11 +138,15 @@ class BroRush(OpeningBase):
         """
         Burrow or unburrow roach
         """
+        detected: bool = self.ai.mediator.get_is_detected(unit=roach)
         burrow_maneuver: CombatManeuver = CombatManeuver()
-        if roach.is_burrowed and roach.health_percentage > self.UNBURROW_AT_HEALTH_PERC:
+        if roach.is_burrowed and (
+            roach.health_percentage > self.UNBURROW_AT_HEALTH_PERC or detected
+        ):
             burrow_maneuver.add(UseAbility(AbilityId.BURROWUP_ROACH, roach, None))
         elif (
             not roach.is_burrowed
+            and not detected
             and roach.health_percentage <= self.BURROW_AT_HEALTH_PERC
         ):
             burrow_maneuver.add(UseAbility(AbilityId.BURROWDOWN_ROACH, roach, None))

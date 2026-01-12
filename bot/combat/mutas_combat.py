@@ -32,7 +32,7 @@ from bot.combat.base_combat import BaseCombat
 if TYPE_CHECKING:
     from ares import AresBot
 
-ATTACK_PATH_LIMIT: int = 5
+ATTACK_PATH_LIMIT: int = 7
 
 
 @dataclass
@@ -64,12 +64,8 @@ class MutasCombat(BaseCombat):
         grid: np.ndarray = kwargs["grid"]
         target: Point2 = kwargs["target"]
         squad_position: Point2 = kwargs["squad_position"]
-        main_squad: bool = kwargs["main_squad"]
-        avoid_grid: np.ndarray = self.mediator.get_air_avoidance_grid
         attack_pathing: DijkstraPathing = kwargs["attack_pathing"]
         retreat_pathing: DijkstraPathing = kwargs["retreat_pathing"]
-        pos_of_main_squad: Point2 = kwargs["pos_of_main_squad"]
-        move_to_target: Point2 = target if main_squad else pos_of_main_squad
         squad_tags: set[int] = kwargs["squad_tags"].copy()
 
         close_enemy_combat_units: Units = close_enemies.filter(
@@ -122,7 +118,7 @@ class MutasCombat(BaseCombat):
         retreat_path = retreat_pathing.get_path(squad_position, ATTACK_PATH_LIMIT)
         move_to: Point2 = Point2(attack_path[-1])
         # short attack path prob means we are close to target, find safe spot
-        if len(attack_path) < 5 and not self.mediator.is_position_safe(
+        if len(attack_path) < 7 and not self.mediator.is_position_safe(
             grid=grid, position=move_to
         ):
             move_to = self.mediator.find_closest_safe_spot(from_pos=move_to, grid=grid)
@@ -192,11 +188,11 @@ class MutasCombat(BaseCombat):
         else:
             if not self.mediator.is_position_safe(grid=grid, position=squad_position):
                 stack_position: Point2 = self._get_stack_position(
-                    mutas_only, retreat_to, grid, 1.5
+                    mutas_only, retreat_to, grid, 2.0
                 )
             else:
                 stack_position: Point2 = self._get_stack_position(
-                    mutas_only, move_to, grid, 1.5
+                    mutas_only, move_to, grid, 2.0
                 )
             squad_maneuver.add(
                 GroupUseAbility(AbilityId.MOVE_MOVE, units, squad_tags, stack_position)
@@ -221,7 +217,7 @@ class MutasCombat(BaseCombat):
         def _get_target_in_range(_units: Units, enemy_units: Units) -> Unit | None:
             if enemy_units:
                 in_attack_range: list[Unit] = cy_in_attack_range(
-                    muta_check, enemy_units
+                    muta_check, enemy_units, bonus_distance=1.0
                 )
                 if in_attack_range:
                     return cy_pick_enemy_target(in_attack_range)
