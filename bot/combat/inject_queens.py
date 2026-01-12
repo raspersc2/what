@@ -50,7 +50,7 @@ class InjectQueens(BaseCombat):
             maneuver: CombatManeuver = CombatManeuver()
             maneuver.add(KeepUnitSafe(queen, avoid_grid))
             maneuver.add(ShootTargetInRange(queen, self.ai.enemy_units))
-            maneuver.add(KeepUnitSafe(queen, ground_grid))
+
             if target_th_tag and target_th_tag in self.ai.unit_tag_dict:
                 target_th: Unit = self.ai.unit_tag_dict[target_th_tag]
                 maneuver.add(
@@ -65,5 +65,7 @@ class InjectQueens(BaseCombat):
                         queen, ground_grid, target_th.position, success_at_distance=4
                     )
                 )
+
+            maneuver.add(KeepUnitSafe(queen, ground_grid))
 
             self.ai.register_behavior(maneuver)
