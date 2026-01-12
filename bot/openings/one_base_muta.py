@@ -187,8 +187,10 @@ class OneBaseMuta(OpeningBase):
         pos_of_main_squad: Point2 = self.ai.mediator.get_position_of_main_squad(
             role=role
         )
-
-        retreat_targets = [th.position for th in self.ai.townhalls]
+        if not self.ai.townhalls:
+            retreat_targets = [self.ai.start_location]
+        else:
+            retreat_targets = [th.position for th in self.ai.townhalls]
         retreat_pathing: DijkstraPathing = cy_dijkstra(
             grid,
             np.array(retreat_targets, dtype=np.intp),
