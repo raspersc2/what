@@ -290,7 +290,7 @@ class MutasCombat(BaseCombat):
         group: Units,
         move_to: Point2,
         grid: np.ndarray,
-        towards_target: float = 1.0,
+        towards_target: float = 2.0,
         safe_pos: bool = True,
     ) -> Point2:
         """
