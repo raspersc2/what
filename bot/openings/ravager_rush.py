@@ -150,8 +150,9 @@ class RavagerRush(OpeningBase):
         )
         squad_target: Point2 = self.attack_target
 
-        for roach in self.ai.mediator.get_own_army_dict[UnitTypeId.ROACH]:
-            roach.attack(squad_target)
+        if self._transitioned:
+            for roach in self.ai.mediator.get_own_army_dict[UnitTypeId.ROACH]:
+                roach.attack(squad_target)
 
         for ravager in self.ai.mediator.get_own_army_dict[UnitTypeId.RAVAGER]:
             self.ai.mediator.assign_role(tag=ravager.tag, role=UnitRole.ATTACKING)
