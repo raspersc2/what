@@ -269,12 +269,12 @@ class ProxyHatch(OpeningBase):
         for spine in spines:
             spine_pos: Point2 = spine.position
             if ground_enemy and len(
-                cy_further_than(ground_enemy, 12.5, spine_pos)
+                cy_further_than(ground_enemy, 11.5, spine_pos)
             ) == len(ground_enemy):
                 pos: Point2 = await self.ai.find_placement(
                     UnitTypeId.SPINECRAWLER,
                     Point2(cy_towards(spine_pos, self.attack_target, 10.0)),
-                    max_distance=4,
+                    max_distance=6,
                 )
                 if pos and cy_has_creep(self.ai.state.creep.data_numpy, pos):
                     path = await self.ai.client.query_pathing(spine.position, pos)
