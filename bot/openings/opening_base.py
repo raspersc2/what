@@ -46,7 +46,10 @@ class OpeningBase(metaclass=ABCMeta):
 
     @property_cache_once_per_frame
     def air_retreat_pathing(self) -> DijkstraPathing:
-        retreat_targets = [th.position for th in self.ai.townhalls]
+        if self.ai.townhalls:
+            retreat_targets = [th.position for th in self.ai.townhalls]
+        else:
+            retreat_targets = [self.ai.start_location]
         retreat_pathing: DijkstraPathing = cy_dijkstra(
             self.ai.mediator.get_air_grid,
             np.array(retreat_targets, dtype=np.intp),
