@@ -19,6 +19,7 @@ from cython_extensions import (
     cy_towards,
     cy_unit_pending,
     cy_closest_to,
+    cy_distance_to_squared,
 )
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
@@ -201,6 +202,7 @@ class ProxyHatch(OpeningBase):
         ability_id = self.ai.game_data.units[
             next_item_to_build.value
         ].creation_ability.id
+        grid: np.ndarray = self.ai.mediator.get_ground_grid
         for drone in proxy_drones:
             if any(o.ability.id == ability_id for o in drone.orders):
                 continue
@@ -213,17 +215,32 @@ class ProxyHatch(OpeningBase):
                 )
                 drone.build(UnitTypeId.HATCHERY, build_location)
             elif not self._proxy_spines_completed:
-                if len(self.ai.townhalls.ready) > 1 and (
-                    len(
-                        [
-                            s
-                            for s in self.ai.mediator.get_own_structures_dict[
-                                UnitTypeId.SPAWNINGPOOL
-                            ]
-                            if s.is_ready
-                        ]
+                if not self.ai.mediator.is_position_safe(
+                    grid=grid, position=drone.position
+                ):
+                    drone.move(
+                        self.ai.mediator.find_closest_safe_spot(
+                            from_pos=drone.position, grid=grid
+                        )
                     )
-                    > 0
+                elif (
+                    len(self.ai.townhalls.ready) > 1
+                    and (
+                        len(
+                            [
+                                s
+                                for s in self.ai.mediator.get_own_structures_dict[
+                                    UnitTypeId.SPAWNINGPOOL
+                                ]
+                                if s.is_ready
+                            ]
+                        )
+                        > 0
+                    )
+                    and cy_distance_to_squared(
+                        drone.position, self._proxy_hatch_location
+                    )
+                    < 150.0
                 ):
                     build_location = await self.ai.find_placement(
                         building=UnitTypeId.SPINECRAWLER,
@@ -231,14 +248,21 @@ class ProxyHatch(OpeningBase):
                             cy_towards(
                                 self._proxy_hatch_location,
                                 self.ai.mediator.get_enemy_nat,
-                                -3.0,
+                                3.0,
                             )
                         ),
                     )
-                    if self.ai.can_afford(UnitTypeId.SPINECRAWLER):
-                        drone.build(UnitTypeId.SPINECRAWLER, build_location)
+                    if build_location:
+                        if self.ai.can_afford(
+                            UnitTypeId.SPINECRAWLER
+                        ) and self.ai.mediator.is_position_safe(
+                            grid=grid, position=build_location
+                        ):
+                            drone.build(UnitTypeId.SPINECRAWLER, build_location)
+                        else:
+                            drone.move(build_location)
                     else:
-                        drone.move(build_location)
+                        drone.move(self._proxy_hatch_location)
                 else:
                     drone.move(self._proxy_hatch_location)
             else:
@@ -251,8 +275,8 @@ class ProxyHatch(OpeningBase):
             grid=self.ai.mediator.get_ground_grid,
             sensitivity=1,
         ):
-            if len(path) > 21:
-                return Point2(path[21])
+            if len(path) > 25:
+                return Point2(path[25])
 
         return self.ai.mediator.get_enemy_nat
 

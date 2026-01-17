@@ -44,7 +44,11 @@ class HighGroundSpotters(BaseCombat):
         target: Point2 = ramp_position
         if self.ai.time < 130.0:
             target = self.ai.game_info.map_center
-        ravagers: Units = self.mediator.get_own_army_dict[UnitTypeId.RAVAGER]
+        close_force: list[Unit] = (
+            list(self.mediator.get_own_army_dict[UnitTypeId.RAVAGER])
+            + self.mediator.get_own_structures_dict[UnitTypeId.SPINECRAWLER]
+            + self.mediator.get_own_structures_dict[UnitTypeId.SPINECRAWLERUPROOTED]
+        )
 
         for unit in units:
             unit_pos: Point2 = unit.position
@@ -58,12 +62,12 @@ class HighGroundSpotters(BaseCombat):
                     continue
 
             close_to_ramp: bool = (
-                cy_distance_to_squared(unit_pos, ramp_position) < 240.0
+                cy_distance_to_squared(unit_pos, ramp_position) < 400.0
             )
             if (
                 close_to_ramp
-                and ravagers
-                and (close_ravagers := cy_closer_than(ravagers, 20, unit_pos))
+                and close_force
+                and (close_ravagers := cy_closer_than(close_force, 20, unit_pos))
             ):
                 target = cy_closest_to(ramp_position, close_ravagers)
             unit.move(target)

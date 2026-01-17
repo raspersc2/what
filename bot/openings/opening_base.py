@@ -62,9 +62,7 @@ class OpeningBase(metaclass=ABCMeta):
         retreat_targets = []
         grid: np.ndarray = self.ai.mediator.get_ground_grid
 
-        for th in self.ai.townhalls:
-            start: Point2 = th.position
-            pos = round(start[0]), round(start[1])
+        def _get_eligible_point(pos: tuple[int, int]) -> tuple[int, int]:
             # find nearby pathable point
             target_pos: tuple[
                 int, int
@@ -75,12 +73,20 @@ class OpeningBase(metaclass=ABCMeta):
                 max_distance=10,
             )
             if target_pos:
-                retreat_targets.append(target_pos)
+                return target_pos
             # backup option, should rarely happen
             else:
-                retreat_targets.append(
-                    cy_towards(th.position, self.ai.game_info.map_center, 5)
-                )
+                return cy_towards(th.position, self.ai.game_info.map_center, 5)
+
+        if self.ai.build_order_runner.chosen_opening in {"ProxyHatch"}:
+            start: Point2 = self.ai.start_location
+            pos = round(start[0]), round(start[1])
+            retreat_targets.append(_get_eligible_point(pos))
+        else:
+            for th in self.ai.townhalls:
+                start: Point2 = th.position
+                pos = round(start[0]), round(start[1])
+                retreat_targets.append(_get_eligible_point(pos))
 
         retreat_pathing: DijkstraPathing = cy_dijkstra(
             self.ai.mediator.get_ground_grid,
