@@ -11,9 +11,10 @@ BuildChoices:
             # - OneBaseMuta
             # - ProxyHatch
             # - DroneRush
-            # - DroneRushVariation
-            - RavagerRush
+            - DroneRushVariation
+            # - RavagerRush
             # - LingDroneRush
+            # - ProxyHatchVariation
 
     Protoss:
         BotName: ProtossRace
@@ -22,6 +23,7 @@ BuildChoices:
             - ProxyHatch
             - LingDroneRush
             - RavagerRush
+            - ProxyHatchVariation
             - Ultras
             - BroRush
             - DroneRush
@@ -34,6 +36,7 @@ BuildChoices:
             - ProxyHatch
             - LingDroneRush
             - RavagerRush
+            - ProxyHatchVariation
             - Ultras
             - BroRush
             - DroneRush
@@ -46,6 +49,7 @@ BuildChoices:
             - ProxyHatch
             - LingDroneRush
             - RavagerRush
+            - ProxyHatchVariation
             - Ultras
             - BroRush
             - DroneRush
@@ -58,6 +62,7 @@ BuildChoices:
             - ProxyHatch
             - LingDroneRush
             - RavagerRush
+            - ProxyHatchVariation
             - Ultras
             - BroRush
             - DroneRush
@@ -133,6 +138,13 @@ Builds:
             - 12 drone
             - 13 overlord
             - 13 drone *3
+
+    ProxyHatchVariation:
+      ConstantWorkerProductionTill: 0
+      OpeningBuildOrder:
+        - 12 drone
+        - 13 overlord
+        - 13 drone *3
 
     RavagerRush:
         ConstantWorkerProductionTill: 0

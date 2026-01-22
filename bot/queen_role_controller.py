@@ -89,7 +89,10 @@ class QueenRoleController:
 
     @property_cache_once_per_frame
     def required_injectors(self) -> int:
-        if self.ai.build_order_runner.chosen_opening in {"ProxyHatch"}:
+        if self.ai.build_order_runner.chosen_opening in {
+            "ProxyHatch",
+            "ProxyHatchVariation",
+        }:
             return 0
         return 1
 

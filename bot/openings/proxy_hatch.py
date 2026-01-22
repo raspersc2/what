@@ -45,6 +45,7 @@ class ProxyHatch(OpeningBase):
     _combat_queens: BaseCombat
     _proxy_hatch_location: Point2
     _ravager_rush: OpeningBase
+    _send_drone_at: float
 
     def __init__(self):
         super().__init__()
@@ -70,13 +71,18 @@ class ProxyHatch(OpeningBase):
     async def on_start(self, ai: AresBot) -> None:
         await super().on_start(ai)
 
+        if self.ai.build_order_runner.chosen_opening == "ProxyHatchVariation":
+            self._send_drone_at = 0.0
+        else:
+            self._send_drone_at = 7.0
+
         self._combat_queens = QueenCombat(ai, ai.config, ai.mediator)
         self._proxy_hatch_location = self._calculate_proxy_hatch_location()
         self._ravager_rush = RavagerRush()
         await self._ravager_rush.on_start(self.ai)
 
     async def on_step(self, target: Point2 | None = None) -> None:
-        if self.ai.time > 7.0:
+        if self.ai.time > self._send_drone_at:
             await self._manage_proxy()
 
         if self.ai.build_order_runner.build_completed and self._proxy_hatch_started:
@@ -269,16 +275,19 @@ class ProxyHatch(OpeningBase):
                 drone.move(self._proxy_hatch_location)
 
     def _calculate_proxy_hatch_location(self) -> Point2:
-        if path := self.ai.mediator.find_raw_path(
-            start=self.ai.mediator.get_enemy_nat,
-            target=self.ai.game_info.map_center,
-            grid=self.ai.mediator.get_ground_grid,
-            sensitivity=1,
-        ):
-            if len(path) > 25:
-                return Point2(path[25])
+        if self.ai.build_order_runner.chosen_opening == "ProxyHatchVariation":
+            return self.ai.mediator.get_enemy_fourth
+        else:
+            if path := self.ai.mediator.find_raw_path(
+                start=self.ai.mediator.get_enemy_nat,
+                target=self.ai.game_info.map_center,
+                grid=self.ai.mediator.get_ground_grid,
+                sensitivity=1,
+            ):
+                if len(path) > 25:
+                    return Point2(path[25])
 
-        return self.ai.mediator.get_enemy_nat
+            return self.ai.mediator.get_enemy_nat
 
     async def _manage_spines(self):
         spines: list[Unit] = self.ai.mediator.get_own_structures_dict[

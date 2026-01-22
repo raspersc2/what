@@ -77,7 +77,8 @@ class RavagerRush(OpeningBase):
     async def on_step(self, target: Point2 | None = None) -> None:
         if (
             self.ai.build_order_runner.build_completed
-            and self.ai.build_order_runner.chosen_opening != "ProxyHatch"
+            and self.ai.build_order_runner.chosen_opening
+            not in {"ProxyHatch", "ProxyHatchVariation"}
             and not self._transitioned
         ):
             if self.can_transition():

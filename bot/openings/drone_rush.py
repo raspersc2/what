@@ -12,6 +12,8 @@ from bot.combat.high_ground_spotters import HighGroundSpotters
 from bot.openings.opening_base import OpeningBase
 from bot.openings.ravager_rush import RavagerRush
 
+from cython_extensions import cy_closest_to, cy_closer_than, cy_distance_to_squared
+
 
 class DroneRush(OpeningBase):
     _drone_combat: BaseCombat
@@ -24,6 +26,9 @@ class DroneRush(OpeningBase):
         self._max_harassing_workers: int = 2
         self._min_drone_health: float = 14.0
         self._num_gatherers_to_leave: int = 1
+        self._stack_for: float = 1.5
+        self._time_started_attack: float = 0.0
+        self._reached_location: bool = False
 
     async def on_start(self, ai: AresBot) -> None:
         await super().on_start(ai)
@@ -63,6 +68,7 @@ class DroneRush(OpeningBase):
             and self.ai.build_order_runner.chosen_opening != "LingDroneRush"
         ):
             start_attack = True
+
         if (
             start_attack
             and not self._attack_started
@@ -76,19 +82,51 @@ class DroneRush(OpeningBase):
                 )
                 self.ai.mediator.remove_worker_from_mineral(worker_tag=worker.tag)
             self._attack_started = True
+            self._time_started_attack = self.ai.time
 
         if self._attack_started:
             drones: Units = self.ai.mediator.get_units_from_role(
                 role=UnitRole.CONTROL_GROUP_FIVE, unit_type=UnitTypeId.DRONE
             )
-            self._drone_combat.execute(
-                units=drones,
-                retreat_pathing=self.ground_retreat_pathing,
-                grid=grid,
-                target=self.attack_target,
-                flee_at_health=self._min_drone_health,
-                mineral_walk=True,
-            )
+            if self.ai.time < self._time_started_attack + self._stack_for:
+                mfs: Units = Units(
+                    cy_closer_than(self.ai.mineral_field, 14.0, self.ai.start_location),
+                    self.ai,
+                )
+                mf: Unit = mfs.furthest_to(self.ai.start_location)
+                for unit in drones:
+                    unit.return_resource() if unit.is_carrying_resource else unit.gather(
+                        mf
+                    )
+
+            elif not self._reached_location:
+                enemy_nat: Point2 = self.ai.mediator.get_enemy_nat
+                mf: Unit = cy_closest_to(enemy_nat, self.ai.mineral_field)
+                for unit in drones:
+                    unit.return_resource() if unit.is_carrying_resource else unit.gather(
+                        mf
+                    )
+
+                # Check if 80% of drones are within 5 distance of enemy natural
+                close_drones = len(
+                    [
+                        d
+                        for d in drones
+                        if cy_distance_to_squared(d.position, enemy_nat) < 56.5
+                    ]
+                )
+                if close_drones >= len(drones) * 0.8:
+                    self._reached_location = True
+
+            else:
+                self._drone_combat.execute(
+                    units=drones,
+                    retreat_pathing=self.ground_retreat_pathing,
+                    grid=grid,
+                    target=self.attack_target,
+                    flee_at_health=self._min_drone_health,
+                    mineral_walk=True,
+                )
 
         harassing_workers: Units = self.ai.mediator.get_units_from_role(
             role=UnitRole.HARASSING, unit_type=UnitTypeId.DRONE
