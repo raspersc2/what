@@ -1,3 +1,4 @@
+from random import choice
 import numpy as np
 
 from ares.behaviors.combat.individual import KeepUnitSafe
@@ -167,7 +168,7 @@ class ProxyHatch(OpeningBase):
             )
             melee: list[Unit] = [u for u in close_enemy if u.ground_range < 3.0]
             workers: list[Unit] = [u for u in melee if u.type_id in WORKER_TYPES]
-            if ling.health < 15 and len(melee) == len(close_enemy):
+            if ling.health < 22 and len(melee) == len(close_enemy):
                 KeepUnitSafe(ling, grid=grid).execute(
                     self.ai, self.ai.config, self.ai.mediator
                 )
@@ -275,8 +276,10 @@ class ProxyHatch(OpeningBase):
                 drone.move(self._proxy_hatch_location)
 
     def _calculate_proxy_hatch_location(self) -> Point2:
-        if self.ai.build_order_runner.chosen_opening == "ProxyHatchVariation":
-            return self.ai.mediator.get_enemy_fourth
+        enemy_expos: list = self.ai.mediator.get_enemy_expansions
+        if self.ai.build_order_runner.chosen_opening == "ProxyHatchVariation" and len(enemy_expos) >= 7:
+            # Pick random enemy expansion location
+            return Point2(choice(enemy_expos)[0])
         else:
             if path := self.ai.mediator.find_raw_path(
                 start=self.ai.mediator.get_enemy_nat,
