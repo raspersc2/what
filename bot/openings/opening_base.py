@@ -83,10 +83,13 @@ class OpeningBase(metaclass=ABCMeta):
             pos = round(start[0]), round(start[1])
             retreat_targets.append(_get_eligible_point(pos))
         else:
-            for th in self.ai.townhalls:
-                start: Point2 = th.position
-                pos = round(start[0]), round(start[1])
-                retreat_targets.append(_get_eligible_point(pos))
+            if self.ai.townhalls:
+                for th in self.ai.townhalls:
+                    start: Point2 = th.position
+                    pos = round(start[0]), round(start[1])
+                    retreat_targets.append(_get_eligible_point(pos))
+            else:
+                retreat_targets.append(self.ai.start_location)
 
         retreat_pathing: DijkstraPathing = cy_dijkstra(
             self.ai.mediator.get_ground_grid,
