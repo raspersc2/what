@@ -173,22 +173,26 @@ class MutasCombat(BaseCombat):
             )
 
         elif needs_stacking:
+            towards_target: float = 2.0 if close_enemies and can_fight else 5.0
             # calculate gathering point that minimizes total travel distance
             if close_to_target:
                 stack_position: Point2 = self._get_stack_position(
-                    mutas_only, retreat_to, grid
+                    mutas_only, retreat_to, grid, towards_target
                 )
             else:
                 stack_position: Point2 = self._get_stack_position(
-                    mutas_only, move_to, grid
+                    mutas_only, move_to, grid, towards_target
                 )
             squad_maneuver.add(
                 GroupUseAbility(AbilityId.MOVE_MOVE, units, squad_tags, stack_position)
             )
         else:
             if not self.mediator.is_position_safe(grid=grid, position=squad_position):
-                stack_position: Point2 = self._get_stack_position(
-                    mutas_only, retreat_to, grid, 2.0
+                stack_position: Point2 = self.ai.mediator.find_closest_safe_spot(
+                    from_pos=squad_position, grid=grid
+                )
+                squad_maneuver.add(
+                    GroupUseAbility(AbilityId.MOVE_MOVE, units, squad_tags, stack_position)
                 )
             else:
                 stack_position: Point2 = self._get_stack_position(
