@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Union
 
 import numpy as np
 from ares.behaviors.combat import CombatManeuver
-from ares.behaviors.combat.individual import ShootTargetInRange, UseAbility
+from ares.behaviors.combat.individual import ShootTargetInRange, UseAbility, KeepUnitSafe
 from ares.behaviors.combat.individual.auto_use_aoe_ability import AutoUseAOEAbility
 from ares.managers.manager_mediator import ManagerMediator
 from cython_extensions import cy_attack_ready, cy_closest_to
@@ -29,6 +29,13 @@ PRIORITY_BILE_TARGETS: set[UnitTypeId] = {
     UnitTypeId.SUPPLYDEPOTLOWERED,
     UnitTypeId.SUPPLYDEPOT,
     UnitTypeId.PYLON,
+}
+
+GROUND_STATIC_DEFENCE_TYPES: set[UnitTypeId] = {
+    UnitTypeId.BUNKER,
+    UnitTypeId.PHOTONCANNON,
+    UnitTypeId.PLANETARYFORTRESS,
+    UnitTypeId.SPINECRAWLER,
 }
 
 
@@ -68,6 +75,7 @@ class RavagerCombat(BaseCombat):
         only_enemy_units: list[Unit] = [
             u for u in only_ground if u.type_id not in ALL_STRUCTURES
         ]
+        static_def: list[Unit] = [u for u in only_ground if u.type_id in GROUND_STATIC_DEFENCE_TYPES]
         for unit in units:
             unit_pos: Point2 = unit.position
             retreat_path: list[tuple] = retreat_pathing.get_path(unit_pos, 2)
@@ -93,17 +101,20 @@ class RavagerCombat(BaseCombat):
                     maneuver.add(ShootTargetInRange(unit, only_ground))
                     target_enemy: Unit = cy_closest_to(unit_pos, only_ground)
 
-                attack_ready: bool = cy_attack_ready(self.ai, unit, target_enemy)
-                if (
-                    not attack_ready
-                    and len(retreat_path) > 1
-                    and not self.mediator.is_position_safe(grid=grid, position=unit_pos)
-                ):
-                    maneuver.add(
-                        UseAbility(AbilityId.MOVE_MOVE, unit, Point2(retreat_path[-1]))
-                    )
+                if static_def:
+                    maneuver.add(KeepUnitSafe(unit, grid))
+                else:
+                    attack_ready: bool = cy_attack_ready(self.ai, unit, target_enemy)
+                    if (
+                        not attack_ready
+                        and len(retreat_path) > 1
+                        and not self.mediator.is_position_safe(grid=grid, position=unit_pos)
+                    ):
+                        maneuver.add(
+                            UseAbility(AbilityId.MOVE_MOVE, unit, Point2(retreat_path[-1]))
+                        )
 
-                maneuver.add(UseAbility(AbilityId.ATTACK_ATTACK, unit, target_enemy))
+                    maneuver.add(UseAbility(AbilityId.ATTACK_ATTACK, unit, target_enemy))
 
             maneuver.add(UseAbility(AbilityId.MOVE_MOVE, unit, target))
 
