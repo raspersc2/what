@@ -87,11 +87,14 @@ class OneBaseMuta(OpeningBase):
         elif self._transitioned:
             await self._ultras.on_step(target)
 
-        if self.ai.state.game_loop % 2 == 0:
+        if self.ai.state.game_loop % 8 == 0:
             spawn: Point2 = self.ai.start_location
             for ol in self.ai.mediator.get_own_army_dict[UnitTypeId.OVERLORD]:
                 if cy_distance_to_squared(ol.position, spawn) > 25.0:
                     ol.move(spawn)
+
+        if not self.ai.build_order_runner.build_completed and self.ai.minerals > 350:
+            self.ai.build_order_runner.set_build_completed()
 
     def on_unit_created(self, unit: Unit) -> None:
         if unit.type_id == UnitTypeId.MUTALISK:
@@ -142,9 +145,7 @@ class OneBaseMuta(OpeningBase):
                 else min(80, len(self.ai.townhalls) * 22)
             )
         )
-        if (
-            self.ai.supply_army >= 10 and self.ai.minerals >= 250
-        ) or self.ai.minerals >= 700:
+        if self.ai.supply_army >= 10 and self.ai.minerals >= 250:
             macro_plan.add(ExpansionController(to_count=16))
         if num_gatherers > 11 and self.ai.structures(UnitTypeId.SPAWNINGPOOL):
             macro_plan.add(GasBuildingController(to_count=32))
@@ -191,9 +192,28 @@ class OneBaseMuta(OpeningBase):
             retreat_targets = [self.ai.start_location]
         else:
             retreat_targets = [th.position for th in self.ai.townhalls]
+
+        retreat_priorities = np.array(
+            [-(grid[pos.rounded] * 2.5) for pos in retreat_targets]
+        )
         retreat_pathing: DijkstraPathing = cy_dijkstra(
-            grid,
-            np.array(retreat_targets, dtype=np.intp),
+            cost=grid,
+            targets=np.array(retreat_targets, dtype=np.intp),
+            priorities=retreat_priorities,
+            checks_enabled=False,
+        )
+
+        targets: list[Point2] = [target]
+        targets.extend([
+            u.position
+            for u in self.ai.all_enemy_units
+            if u.type_id not in COMMON_UNIT_IGNORE_TYPES
+        ])
+        attack_priorities = np.array([-(grid[pos.rounded] * 2.5) for pos in targets])
+        attack_pathing: DijkstraPathing = cy_dijkstra(
+            cost=grid,
+            targets=np.array(targets, dtype=np.intp),
+            priorities=attack_priorities,
             checks_enabled=False,
         )
 
@@ -221,22 +241,13 @@ class OneBaseMuta(OpeningBase):
                 query_tree=UnitTreeQueryType.AllEnemy,
                 return_as_dict=False,
             )[0]
-            _target: Point2 = target if squad.main_squad else pos_of_main_squad
-            targets: list[Point2]
-            if close_enemy_units_only:
-                targets = [u.position for u in close_enemy_units_only]
-            else:
-                targets = [_target]
-            attack_pathing: DijkstraPathing = cy_dijkstra(
-                grid, np.array(targets, dtype=np.intp), checks_enabled=False
-            )
 
             combat_class.execute(
                 squad.squad_units,
                 close_enemies=everything_near_squad,
                 close_enemy_units_only=close_enemy_units_only,
                 further_enemies_near_squad=further_enemies_near_squad,
-                target=_target,
+                target=target,
                 squad_position=squad.squad_position,
                 grid=grid,
                 main_squad=squad.main_squad,

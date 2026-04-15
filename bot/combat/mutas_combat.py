@@ -192,7 +192,9 @@ class MutasCombat(BaseCombat):
                     from_pos=squad_position, grid=grid
                 )
                 squad_maneuver.add(
-                    GroupUseAbility(AbilityId.MOVE_MOVE, units, squad_tags, stack_position)
+                    GroupUseAbility(
+                        AbilityId.MOVE_MOVE, units, squad_tags, stack_position
+                    )
                 )
             else:
                 stack_position: Point2 = self._get_stack_position(
