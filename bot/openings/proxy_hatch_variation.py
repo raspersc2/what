@@ -2,8 +2,8 @@ from ares import AresBot
 from sc2.position import Point2
 from sc2.unit import Unit
 
-from bot.openings.proxy_hatch import ProxyHatch
 from bot.openings.opening_base import OpeningBase
+from bot.openings.proxy_hatch import ProxyHatch
 
 
 class ProxyHatchVariation(OpeningBase):

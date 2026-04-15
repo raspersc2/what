@@ -3,16 +3,9 @@ from typing import TYPE_CHECKING, Union
 
 import numpy as np
 from ares.behaviors.combat import CombatManeuver
-from ares.behaviors.combat.individual import (
-    ShootTargetInRange,
-    UseAbility,
-)
+from ares.behaviors.combat.individual import ShootTargetInRange, UseAbility
 from ares.managers.manager_mediator import ManagerMediator
-from cython_extensions import (
-    cy_attack_ready,
-    cy_closest_to,
-    cy_distance_to_squared,
-)
+from cython_extensions import cy_attack_ready, cy_closest_to, cy_distance_to_squared
 from cython_extensions.dijkstra import DijkstraPathing
 from sc2.ids.ability_id import AbilityId
 from sc2.position import Point2

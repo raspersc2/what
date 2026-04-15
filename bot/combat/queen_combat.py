@@ -14,10 +14,10 @@ from ares.behaviors.combat.individual import (
 )
 from ares.managers.manager_mediator import ManagerMediator
 from cython_extensions import (
+    cy_closer_than,
     cy_closest_to,
     cy_distance_to_squared,
     cy_has_creep,
-    cy_closer_than,
 )
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId

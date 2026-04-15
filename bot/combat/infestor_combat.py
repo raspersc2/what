@@ -3,10 +3,7 @@ from typing import TYPE_CHECKING, Union
 
 import numpy as np
 from ares.behaviors.combat import CombatManeuver
-from ares.behaviors.combat.individual import (
-    KeepUnitSafe,
-    UseAbility,
-)
+from ares.behaviors.combat.individual import KeepUnitSafe, UseAbility
 from ares.behaviors.combat.individual.auto_use_aoe_ability import AutoUseAOEAbility
 from ares.consts import ALL_STRUCTURES
 from ares.managers.manager_mediator import ManagerMediator

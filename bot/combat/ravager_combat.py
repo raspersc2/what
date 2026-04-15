@@ -3,10 +3,7 @@ from typing import TYPE_CHECKING, Union
 
 import numpy as np
 from ares.behaviors.combat import CombatManeuver
-from ares.behaviors.combat.individual import (
-    ShootTargetInRange,
-    UseAbility,
-)
+from ares.behaviors.combat.individual import ShootTargetInRange, UseAbility
 from ares.behaviors.combat.individual.auto_use_aoe_ability import AutoUseAOEAbility
 from ares.managers.manager_mediator import ManagerMediator
 from cython_extensions import cy_attack_ready, cy_closest_to

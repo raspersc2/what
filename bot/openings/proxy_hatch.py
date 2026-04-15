@@ -1,10 +1,8 @@
 from random import choice
+
 import numpy as np
-
-from ares.behaviors.combat.individual import KeepUnitSafe
-from src.ares.consts import WORKER_TYPES
-
 from ares import AresBot
+from ares.behaviors.combat.individual import KeepUnitSafe
 from ares.behaviors.macro import (
     AutoSupply,
     BuildWorkers,
@@ -15,18 +13,19 @@ from ares.behaviors.macro import (
 )
 from ares.consts import UnitRole, UnitTreeQueryType
 from cython_extensions import (
+    cy_closest_to,
+    cy_distance_to_squared,
     cy_further_than,
     cy_has_creep,
     cy_towards,
     cy_unit_pending,
-    cy_closest_to,
-    cy_distance_to_squared,
 )
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
+from src.ares.consts import WORKER_TYPES
 
 from bot.combat.base_combat import BaseCombat
 from bot.combat.queen_combat import QueenCombat
@@ -277,7 +276,10 @@ class ProxyHatch(OpeningBase):
 
     def _calculate_proxy_hatch_location(self) -> Point2:
         enemy_expos: list = self.ai.mediator.get_enemy_expansions
-        if self.ai.build_order_runner.chosen_opening == "ProxyHatchVariation" and len(enemy_expos) >= 7:
+        if (
+            self.ai.build_order_runner.chosen_opening == "ProxyHatchVariation"
+            and len(enemy_expos) >= 7
+        ):
             # Pick random enemy expansion location
             return Point2(choice(enemy_expos)[0])
         else:

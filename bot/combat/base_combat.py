@@ -1,13 +1,12 @@
 from typing import TYPE_CHECKING, Protocol
 
-from src.ares.consts import ALL_STRUCTURES
-
 from ares.cache import property_cache_once_per_frame
 from ares.managers.manager_mediator import ManagerMediator
 from cython_extensions import cy_closest_to
 from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units
+from src.ares.consts import ALL_STRUCTURES
 
 if TYPE_CHECKING:
     from ares import AresBot

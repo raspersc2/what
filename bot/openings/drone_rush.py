@@ -1,6 +1,7 @@
 import numpy as np
 from ares import AresBot
 from ares.consts import UnitRole
+from cython_extensions import cy_closer_than, cy_closest_to, cy_distance_to_squared
 from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
@@ -11,8 +12,6 @@ from bot.combat.drone_combat import DroneCombat
 from bot.combat.high_ground_spotters import HighGroundSpotters
 from bot.openings.opening_base import OpeningBase
 from bot.openings.ravager_rush import RavagerRush
-
-from cython_extensions import cy_closest_to, cy_closer_than, cy_distance_to_squared
 
 
 class DroneRush(OpeningBase):

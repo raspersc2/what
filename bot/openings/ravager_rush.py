@@ -1,6 +1,4 @@
 import numpy as np
-from loguru import logger
-
 from ares import AresBot
 from ares.behaviors.macro import (
     AutoSupply,
@@ -13,17 +11,16 @@ from ares.behaviors.macro import (
 )
 from ares.consts import UnitRole, UnitTreeQueryType
 from ares.managers.squad_manager import UnitSquad
-
-from bot.combat.high_ground_spotters import HighGroundSpotters
-from bot.combat.ravager_combat import RavagerCombat
-from bot.consts import COMMON_UNIT_IGNORE_TYPES
-
+from loguru import logger
 from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
 
 from bot.combat.base_combat import BaseCombat
+from bot.combat.high_ground_spotters import HighGroundSpotters
+from bot.combat.ravager_combat import RavagerCombat
+from bot.consts import COMMON_UNIT_IGNORE_TYPES
 from bot.openings.opening_base import OpeningBase
 from bot.openings.ultras import Ultras
 

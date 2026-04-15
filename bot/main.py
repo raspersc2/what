@@ -1,18 +1,12 @@
 import importlib
-import math
 from typing import Any, Optional
 
-import numpy as np
 from ares import AresBot
-from ares.behaviors.combat.individual import KeepUnitSafe, TumorSpreadCreep
+from ares.behaviors.combat.individual import TumorSpreadCreep
 from ares.behaviors.macro.mining import Mining
-from ares.consts import ALL_STRUCTURES, TOWNHALL_TYPES, UnitRole
-from cython_extensions import cy_closest_to, cy_distance_to_squared, cy_towards
-from loguru import logger
+from ares.consts import UnitRole
 from sc2.data import Race
-from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
-from sc2.position import Point2
 from sc2.unit import Unit
 
 from bot.queen_manager import QueenManager
@@ -92,9 +86,7 @@ class MyBot(AresBot):
             await self.chat_send(
                 f"Tag: {self.build_order_runner.chosen_opening}", team_only=True
             )
-            await self.chat_send(
-                f"Tag: {self.race.name}", team_only=True
-            )
+            await self.chat_send(f"Tag: {self.race.name}", team_only=True)
             self.opening_chat_tag = True
 
         if not self._dino_tag and self.mediator.get_own_army_dict[UnitTypeId.ULTRALISK]:
