@@ -1,5 +1,6 @@
 import numpy as np
 from ares import AresBot
+from ares.behaviors.macro import BuildWorkers, AutoSupply
 from ares.consts import UnitRole
 from cython_extensions import cy_closer_than, cy_closest_to, cy_distance_to_squared
 from sc2.ids.unit_typeid import UnitTypeId
@@ -49,6 +50,9 @@ class DroneRush(OpeningBase):
 
         if self._attack_started and hasattr(self, "_ravager_rush"):
             await self._ravager_rush.on_step(target)
+        else:
+            self.ai.register_behavior(BuildWorkers(200))
+            self.ai.register_behavior(AutoSupply(self.ai.start_location))
 
     def on_unit_created(self, unit: Unit) -> None:
         if self.ai.time < 50.0 and unit.type_id == UnitTypeId.DRONE:

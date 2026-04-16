@@ -3,7 +3,11 @@ from typing import TYPE_CHECKING, Union
 
 import numpy as np
 from ares.behaviors.combat import CombatManeuver
-from ares.behaviors.combat.individual import ShootTargetInRange, UseAbility, KeepUnitSafe
+from ares.behaviors.combat.individual import (
+    ShootTargetInRange,
+    UseAbility,
+    KeepUnitSafe,
+)
 from ares.behaviors.combat.individual.auto_use_aoe_ability import AutoUseAOEAbility
 from ares.managers.manager_mediator import ManagerMediator
 from cython_extensions import cy_attack_ready, cy_closest_to
@@ -34,7 +38,7 @@ GROUND_STATIC_DEFENCE_TYPES: set[UnitTypeId] = {
     UnitTypeId.PHOTONCANNON,
     UnitTypeId.PLANETARYFORTRESS,
     UnitTypeId.SPINECRAWLER,
-    UnitTypeId.SIEGETANKSIEGED
+    UnitTypeId.SIEGETANKSIEGED,
 }
 
 
@@ -74,7 +78,9 @@ class RavagerCombat(BaseCombat):
         only_enemy_units: list[Unit] = [
             u for u in only_ground if u.type_id not in ALL_STRUCTURES
         ]
-        static_def: list[Unit] = [u for u in only_ground if u.type_id in GROUND_STATIC_DEFENCE_TYPES]
+        static_def: list[Unit] = [
+            u for u in only_ground if u.type_id in GROUND_STATIC_DEFENCE_TYPES
+        ]
         for unit in units:
             unit_pos: Point2 = unit.position
             retreat_path: list[tuple] = retreat_pathing.get_path(unit_pos, 2)
@@ -107,13 +113,19 @@ class RavagerCombat(BaseCombat):
                     if (
                         not attack_ready
                         and len(retreat_path) > 1
-                        and not self.mediator.is_position_safe(grid=grid, position=unit_pos)
+                        and not self.mediator.is_position_safe(
+                            grid=grid, position=unit_pos
+                        )
                     ):
                         maneuver.add(
-                            UseAbility(AbilityId.MOVE_MOVE, unit, Point2(retreat_path[-1]))
+                            UseAbility(
+                                AbilityId.MOVE_MOVE, unit, Point2(retreat_path[-1])
+                            )
                         )
 
-                    maneuver.add(UseAbility(AbilityId.ATTACK_ATTACK, unit, target_enemy))
+                    maneuver.add(
+                        UseAbility(AbilityId.ATTACK_ATTACK, unit, target_enemy)
+                    )
 
             maneuver.add(UseAbility(AbilityId.MOVE_MOVE, unit, target))
 

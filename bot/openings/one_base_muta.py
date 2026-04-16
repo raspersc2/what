@@ -204,11 +204,13 @@ class OneBaseMuta(OpeningBase):
         )
 
         targets: list[Point2] = [target]
-        targets.extend([
-            u.position
-            for u in self.ai.all_enemy_units
-            if u.type_id not in COMMON_UNIT_IGNORE_TYPES
-        ])
+        targets.extend(
+            [
+                u.position
+                for u in self.ai.all_enemy_units
+                if u.type_id not in COMMON_UNIT_IGNORE_TYPES
+            ]
+        )
         attack_priorities = np.array([-(grid[pos.rounded] * 2.5) for pos in targets])
         attack_pathing: DijkstraPathing = cy_dijkstra(
             cost=grid,

@@ -1,6 +1,8 @@
 import importlib
 from typing import Any, Optional
 
+from loguru import logger
+
 from ares import AresBot
 from ares.behaviors.combat.individual import TumorSpreadCreep
 from ares.behaviors.macro.mining import Mining
@@ -46,6 +48,7 @@ class MyBot(AresBot):
         self._dino_tag: bool = False
         self._switched_to_prevent_tie: bool = False
         self._on_gas: bool = True
+        self._switched_due_to_worker_rush: bool = False
 
     def load_opening(self, opening_name: str) -> None:
         """Load opening from bot.openings.<snake_case> with class <PascalCase>"""
@@ -94,6 +97,18 @@ class MyBot(AresBot):
                 f"Tag: {self.time_formatted}_dinosaurs", team_only=True
             )
             self._dino_tag = True
+
+        if (
+            not self._switched_due_to_worker_rush
+            and self.mediator.get_enemy_worker_rushed
+        ):
+            self.load_opening("DroneRushVariation")
+            if hasattr(self.opening_handler, "on_start"):
+                await self.opening_handler.on_start(self)
+            self.build_order_runner.set_build_completed()
+            self.mediator.get_building_tracker_dict.clear()
+            self._switched_due_to_worker_rush = True
+            logger.info(f"{self.time_formatted} - Switched to DroneRushVariation")
 
         for tumor in self.structures(UnitTypeId.CREEPTUMORBURROWED):
             self.register_behavior(
