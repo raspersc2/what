@@ -26,8 +26,6 @@ PRIORITY_BILE_TARGETS: set[UnitTypeId] = {
     UnitTypeId.PHOTONCANNON,
     UnitTypeId.SHIELDBATTERY,
     UnitTypeId.SPINECRAWLER,
-    UnitTypeId.SUPPLYDEPOTLOWERED,
-    UnitTypeId.SUPPLYDEPOT,
     UnitTypeId.PYLON,
 }
 
@@ -36,6 +34,7 @@ GROUND_STATIC_DEFENCE_TYPES: set[UnitTypeId] = {
     UnitTypeId.PHOTONCANNON,
     UnitTypeId.PLANETARYFORTRESS,
     UnitTypeId.SPINECRAWLER,
+    UnitTypeId.SIEGETANKSIEGED
 }
 
 
