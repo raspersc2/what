@@ -2,7 +2,12 @@ import numpy as np
 from ares import AresBot
 from ares.behaviors.macro import BuildWorkers, AutoSupply
 from ares.consts import UnitRole
-from cython_extensions import cy_closer_than, cy_closest_to, cy_distance_to_squared
+from cython_extensions import (
+    cy_closer_than,
+    cy_closest_to,
+    cy_distance_to_squared,
+    cy_unit_pending,
+)
 from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
@@ -51,7 +56,11 @@ class DroneRush(OpeningBase):
 
         if self._attack_started and hasattr(self, "_ravager_rush"):
             await self._ravager_rush.on_step(target)
-        else:
+        elif (
+            self._attack_started
+            and self.ai.build_order_runner.build_completed
+            and self.ai.build_order_runner.chosen_opening != "LingDroneRush"
+        ):
             self.ai.register_behavior(BuildWorkers(200))
             self.ai.register_behavior(AutoSupply(self.ai.start_location))
 
@@ -67,7 +76,9 @@ class DroneRush(OpeningBase):
         )
         grid: np.ndarray = self.ai.mediator.get_ground_grid
         start_attack: bool = False
-        if len(self.ai.mediator.get_own_army_dict[UnitTypeId.ZERGLING]) > 0 or (
+        if len(
+            self.ai.mediator.get_own_army_dict[UnitTypeId.ZERGLING]
+        ) + cy_unit_pending(self.ai, UnitTypeId.ZERGLING) > 2 or (
             self.ai.build_order_runner.build_completed
             and self.ai.build_order_runner.chosen_opening != "LingDroneRush"
         ):
@@ -123,11 +134,13 @@ class DroneRush(OpeningBase):
                     self._reached_location = True
 
             else:
-                if self.ai.time < 125.0 and (flying_structures := [
-                    s
-                    for s in self.ai.enemy_structures
-                    if s.is_flying and not s.is_memory
-                ]):
+                if self.ai.time < 125.0 and (
+                    flying_structures := [
+                        s
+                        for s in self.ai.enemy_structures
+                        if s.is_flying and not s.is_memory
+                    ]
+                ):
                     target: Point2 = flying_structures[0].position
                 else:
                     target: Point2 = self.attack_target

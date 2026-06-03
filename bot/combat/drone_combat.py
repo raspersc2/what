@@ -55,7 +55,7 @@ class DroneCombat(BaseCombat):
         mineral_walk: bool = kwargs["mineral_walk"]
         enemy_ground: dict[int, Units] = self.mediator.get_units_in_range(
             start_points=units,
-            distances=12.0,
+            distances=20.0,
             query_tree=UnitTreeQueryType.EnemyGround,
             return_as_dict=True,
         )
