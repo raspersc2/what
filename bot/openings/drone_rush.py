@@ -36,6 +36,7 @@ class DroneRush(OpeningBase):
 
         if self.ai.build_order_runner.chosen_opening == "DroneRush":
             self._ravager_rush = RavagerRush()
+            self.ai.client.game_step = 1
             await self._ravager_rush.on_start(self.ai)
         elif self.ai.build_order_runner.chosen_opening == "LingDroneRush":
             self._min_drone_health = 0.0
@@ -122,11 +123,19 @@ class DroneRush(OpeningBase):
                     self._reached_location = True
 
             else:
+                if self.ai.time < 125.0 and (flying_structures := [
+                    s
+                    for s in self.ai.enemy_structures
+                    if s.is_flying and not s.is_memory
+                ]):
+                    target: Point2 = flying_structures[0].position
+                else:
+                    target: Point2 = self.attack_target
                 self._drone_combat.execute(
                     units=drones,
                     retreat_pathing=self.ground_retreat_pathing,
                     grid=grid,
-                    target=self.attack_target,
+                    target=target,
                     flee_at_health=self._min_drone_health,
                     mineral_walk=True,
                 )

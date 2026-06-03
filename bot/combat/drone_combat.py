@@ -5,7 +5,13 @@ import numpy as np
 from ares.behaviors.combat import CombatManeuver
 from ares.behaviors.combat.individual import ShootTargetInRange, UseAbility
 from ares.managers.manager_mediator import ManagerMediator
-from cython_extensions import cy_attack_ready, cy_closest_to, cy_distance_to_squared
+from cython_extensions import (
+    cy_attack_ready,
+    cy_closest_to,
+    cy_distance_to_squared,
+    cy_center,
+    cy_towards,
+)
 from cython_extensions.dijkstra import DijkstraPathing
 from sc2.ids.ability_id import AbilityId
 from sc2.position import Point2
@@ -53,6 +59,7 @@ class DroneCombat(BaseCombat):
             query_tree=UnitTreeQueryType.EnemyGround,
             return_as_dict=True,
         )
+
         close_mf: Unit = cy_closest_to(self.ai.start_location, self.ai.mineral_field)
         for unit in units:
             if unit.is_carrying_resource:
@@ -62,7 +69,7 @@ class DroneCombat(BaseCombat):
             unit_pos: Point2 = unit.position
             close_to_target: bool = cy_distance_to_squared(unit_pos, target) < 144.0
             close_enemy: Units = enemy_ground[unit.tag].filter(
-                lambda u: u.type_id not in COMMON_UNIT_IGNORE_TYPES
+                lambda u: u.type_id not in COMMON_UNIT_IGNORE_TYPES and not u.is_memory
             )
             only_enemy_units: Units = close_enemy.filter(
                 lambda u: u.type_id not in ALL_STRUCTURES
@@ -104,6 +111,20 @@ class DroneCombat(BaseCombat):
 
                 if not attack_ready and not safe:
                     if mineral_walk:
+                        pos_of_enemy: Point2 = Point2(cy_center(close_enemy))
+                        # draw a line back behind the worker, and find a mf
+                        position = cy_towards(pos_of_enemy, unit_pos, 6.0)
+                        target_mfs = [
+                            mf
+                            for mf in self.ai.mineral_field
+                            if cy_distance_to_squared(mf.position, position)
+                            < cy_distance_to_squared(mf.position, pos_of_enemy)
+                            and cy_distance_to_squared(mf.position, unit_pos) > 16.0
+                        ]
+                        if target_mfs:
+                            close_mf: Unit = cy_closest_to(
+                                position=unit_pos, units=target_mfs
+                            )
                         harass_maneuver.add(
                             UseAbility(AbilityId.HARVEST_GATHER_DRONE, unit, close_mf)
                         )
