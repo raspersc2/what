@@ -53,6 +53,9 @@ class DroneCombat(BaseCombat):
         target: Point2 = kwargs["target"]
         flee_at_health: float = kwargs["flee_at_health"]
         mineral_walk: bool = kwargs["mineral_walk"]
+        ramp_walled_off = (
+            kwargs["ramp_walled_off"] if "ramp_walled_off" in kwargs else False
+        )
         enemy_ground: dict[int, Units] = self.mediator.get_units_in_range(
             start_points=units,
             distances=20.0,
@@ -99,14 +102,14 @@ class DroneCombat(BaseCombat):
                 else:
                     harass_maneuver.add(UseAbility(AbilityId.MOVE_MOVE, unit, target))
             elif close_enemy:
-                if only_enemy_units:
+                if only_enemy_units and not ramp_walled_off:
                     target_enemy: Unit = cy_closest_to(unit_pos, only_enemy_units)
                 else:
                     target_enemy: Unit = cy_closest_to(unit_pos, close_enemy)
 
                 attack_ready: bool = cy_attack_ready(self.ai, unit, target_enemy)
                 harass_maneuver.add(ShootTargetInRange(unit, only_enemy_units))
-                if close_enemy and not only_enemy_units:
+                if (close_enemy and not only_enemy_units) or ramp_walled_off:
                     harass_maneuver.add(ShootTargetInRange(unit, close_enemy))
 
                 if not attack_ready and not safe:

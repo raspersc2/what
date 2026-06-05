@@ -34,6 +34,7 @@ class DroneRush(OpeningBase):
         self._stack_for: float = 1.5
         self._time_started_attack: float = 0.0
         self._reached_location: bool = False
+        self._enemy_walled_off: bool = False
 
     async def on_start(self, ai: AresBot) -> None:
         await super().on_start(ai)
@@ -53,6 +54,13 @@ class DroneRush(OpeningBase):
 
     async def on_step(self, target: Point2 | None = None) -> None:
         self._manage_worker_rush()
+
+        if not self._enemy_walled_off and self.ai.state.game_loop % 20 == 0:
+            self._enemy_walled_off = self.ai.main_ramp_walled_off(
+                self.ai.mediator.get_enemy_ramp
+            )
+            if self._enemy_walled_off:
+                await self.ai.chat_send(f"Tag: {self.ai.time_formatted}: WallOff")
 
         if self._attack_started and hasattr(self, "_ravager_rush"):
             await self._ravager_rush.on_step(target)
@@ -151,6 +159,7 @@ class DroneRush(OpeningBase):
                     target=target,
                     flee_at_health=self._min_drone_health,
                     mineral_walk=True,
+                    ramp_walled_off=self._enemy_walled_off,
                 )
 
         harassing_workers: Units = self.ai.mediator.get_units_from_role(
@@ -169,4 +178,5 @@ class DroneRush(OpeningBase):
             target=self.attack_target,
             flee_at_health=14,
             mineral_walk=True,
+            ramp_walled_off=self._enemy_walled_off,
         )
