@@ -66,3 +66,9 @@ TOWNHALL_TYPES: set[UnitID] = {
     UnitID.PLANETARYFORTRESS,
     UnitID.NEXUS,
 }
+
+SUPPLY_TYPES: set[UnitID] = {
+    UnitID.SUPPLYDEPOTLOWERED,
+    UnitID.SUPPLYDEPOT,
+    UnitID.PYLON,
+}

@@ -15,12 +15,13 @@ from cython_extensions import (
 from cython_extensions.dijkstra import DijkstraPathing
 from sc2.ids.ability_id import AbilityId
 from sc2.position import Point2
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units
 from src.ares.consts import ALL_STRUCTURES, UnitTreeQueryType
 
 from bot.combat.base_combat import BaseCombat
-from bot.consts import COMMON_UNIT_IGNORE_TYPES
+from bot.consts import COMMON_UNIT_IGNORE_TYPES, SUPPLY_TYPES
 
 if TYPE_CHECKING:
     from ares import AresBot
@@ -75,7 +76,7 @@ class DroneCombat(BaseCombat):
                 lambda u: u.type_id not in COMMON_UNIT_IGNORE_TYPES and not u.is_memory
             )
             only_enemy_units: Units = close_enemy.filter(
-                lambda u: u.type_id not in ALL_STRUCTURES
+                lambda u: u.type_id not in ALL_STRUCTURES or u.type_id in SUPPLY_TYPES
             )
             fleeing: bool = unit.health <= flee_at_health
             safe: bool = self.mediator.is_position_safe(grid=grid, position=unit_pos)
@@ -138,7 +139,11 @@ class DroneCombat(BaseCombat):
 
                 else:
                     # try not to chase one lone enemy
-                    if only_enemy_units and len(only_enemy_units) == 1:
+                    if (
+                        only_enemy_units
+                        and len(only_enemy_units) == 1
+                        and only_enemy_units[0].type_id not in SUPPLY_TYPES
+                    ):
                         if not close_to_target:
                             harass_maneuver.add(
                                 UseAbility(AbilityId.MOVE_MOVE, unit, target)
