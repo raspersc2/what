@@ -70,7 +70,7 @@ class DroneCombat(BaseCombat):
                 continue
 
             unit_pos: Point2 = unit.position
-            close_to_target: bool = cy_distance_to_squared(unit_pos, target) < 144.0
+            close_to_target: bool = cy_distance_to_squared(unit_pos, target) < 9.0
             close_enemy: Units = enemy_ground[unit.tag].filter(
                 lambda u: u.type_id not in COMMON_UNIT_IGNORE_TYPES and not u.is_memory
             )
