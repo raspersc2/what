@@ -66,7 +66,11 @@ class DroneCombat(BaseCombat):
 
         close_mf: Unit = cy_closest_to(self.ai.start_location, self.ai.mineral_field)
         for unit in units:
-            if unit.is_carrying_resource:
+            if (
+                unit.is_carrying_resource
+                and cy_distance_to_squared(unit.position, self.ai.start_location)
+                < 250.0
+            ):
                 unit.return_resource()
                 continue
 
