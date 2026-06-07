@@ -82,7 +82,9 @@ class DroneCombat(BaseCombat):
             only_enemy_units: Units = close_enemy.filter(
                 lambda u: u.type_id not in ALL_STRUCTURES or u.type_id in SUPPLY_TYPES
             )
-            fleeing: bool = unit.health <= flee_at_health
+            fleeing: bool = (
+                unit.health <= flee_at_health or len(only_enemy_units) > len(units) * 4
+            )
             safe: bool = self.mediator.is_position_safe(grid=grid, position=unit_pos)
             retreat_path = retreat_pathing.get_path(unit_pos, 5)
             if len(retreat_path) > 1:
