@@ -10,8 +10,8 @@ BuildChoices:
             # - Ultras
             # - OneBaseMuta
             # - ProxyHatch
-            # - DroneRush
-            - DroneRushVariation
+            - DroneRush
+            # - DroneRushVariation
             # - RavagerRush
             # - LingDroneRush
             # - ProxyHatchVariation
@@ -81,10 +81,8 @@ Builds:
         ConstantWorkerProductionTill: 0
         OpeningBuildOrder:
             - 12 drone *2
-            - 12 gas
-            - 12 drone
-            - 12 gas
-            - 12 drone
+            - 12 gas *2
+            - 12 drone *2
             - 12 cancel_gas
             - 12 cancel_gas
             - 12 overlord

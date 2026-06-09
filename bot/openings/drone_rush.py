@@ -42,7 +42,6 @@ class DroneRush(OpeningBase):
 
         if self.ai.build_order_runner.chosen_opening == "DroneRush":
             self._ravager_rush = RavagerRush()
-            self.ai.client.game_step = 1
             await self._ravager_rush.on_start(self.ai)
         elif self.ai.build_order_runner.chosen_opening == "LingDroneRush":
             self._min_drone_health = 0.0
