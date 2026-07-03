@@ -46,6 +46,11 @@ class DroneRush(OpeningBase):
         elif self.ai.build_order_runner.chosen_opening == "LingDroneRush":
             self._min_drone_health = 0.0
             self._num_gatherers_to_leave = 0
+        elif self.ai.build_order_runner.chosen_opening == "DroneRushFast":
+            self._min_drone_health = 0.0
+            self._num_gatherers_to_leave = 0
+            self._stack_for = 0.0
+            self._max_harassing_workers = 0
         else:
             self._max_harassing_workers = 0
             self._min_drone_health = 0.0

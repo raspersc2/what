@@ -138,7 +138,7 @@ class ProxyHatch(OpeningBase):
                 )
             )
         macro_plan.add(
-            BuildWorkers(to_count=19 if not self._proxy_spines_completed else 17)
+            BuildWorkers(to_count=18 if not self._proxy_spines_completed else 17)
         )
 
         if self._proxy_spines_completed:
@@ -280,6 +280,7 @@ class ProxyHatch(OpeningBase):
             self.ai.build_order_runner.chosen_opening == "ProxyHatchVariation"
             and len(enemy_expos) >= 7
         ):
+            enemy_expos = enemy_expos[1:3]
             # Pick random enemy expansion location
             return Point2(choice(enemy_expos)[0])
         else:
