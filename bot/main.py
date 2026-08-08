@@ -98,9 +98,8 @@ class MyBot(AresBot):
             )
             self._dino_tag = True
 
-        if (
-            not self._switched_due_to_worker_rush
-            and self.mediator.get_enemy_worker_rushed
+        if not self._switched_due_to_worker_rush and (
+            self.mediator.get_enemy_worker_rushed or self.mediator.get_enemy_ling_rushed
         ):
             self.load_opening("DroneRushVariation")
             if hasattr(self.opening_handler, "on_start"):
