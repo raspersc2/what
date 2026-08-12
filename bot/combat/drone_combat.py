@@ -15,7 +15,6 @@ from cython_extensions import (
 from cython_extensions.dijkstra import DijkstraPathing
 from sc2.ids.ability_id import AbilityId
 from sc2.position import Point2
-from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units
 from src.ares.consts import ALL_STRUCTURES, UnitTreeQueryType
@@ -80,7 +79,7 @@ class DroneCombat(BaseCombat):
                 lambda u: u.type_id not in COMMON_UNIT_IGNORE_TYPES and not u.is_memory
             )
             only_enemy_units: Units = close_enemy.filter(
-                lambda u: u.type_id not in ALL_STRUCTURES or u.type_id in SUPPLY_TYPES
+                lambda u: u.type_id not in ALL_STRUCTURES
             )
             fleeing: bool = (
                 unit.health <= flee_at_health or len(only_enemy_units) > len(units) * 4
