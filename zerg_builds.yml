@@ -11,11 +11,12 @@ BuildChoices:
             # - OneBaseMuta
             # - ProxyHatch
             # - DroneRush
-            - ProxyHatchVariation
+            # - ProxyHatchVariation
             # - DroneRushVariation
             # - RavagerRush
             # - LingDroneRush
             # - ProxyHatchVariation
+            - SwarmHosts
 
     Protoss:
         BotName: ProtossRace
@@ -30,6 +31,7 @@ BuildChoices:
             - DroneRushFast
             - DroneRush
             - DroneRushVariation
+            - SwarmHosts
 
     Random:
         BotName: RandomRace
@@ -44,6 +46,7 @@ BuildChoices:
             - DroneRushFast
             - DroneRush
             - DroneRushVariation
+            - SwarmHosts
 
     Terran:
         BotName: TerranRace
@@ -58,6 +61,7 @@ BuildChoices:
             - DroneRushFast
             - DroneRush
             - DroneRushVariation
+            - SwarmHosts
 
     Zerg:
         BotName: ZergRace
@@ -72,6 +76,7 @@ BuildChoices:
             - DroneRushFast
             - DroneRush
             - DroneRushVariation
+            - SwarmHosts
 
 Builds:
     BroRush:
@@ -171,6 +176,23 @@ Builds:
             - 14 drone
             - 14 overlord
             - 14 roach *4
+
+    SwarmHosts:
+        ConstantWorkerProductionTill: 0
+        OpeningBuildOrder:
+            - 12 drone
+            - 13 overlord
+            - 13 drone *3
+            - 16 expand
+            - 15 drone *2
+            - 17 spawningpool
+            - 16 drone *2
+            - 17 gas
+            - 16 drone *2
+            - 16 overlord
+            - 16 queen *2
+            - 16 drone *6
+            - 16 lair
 
     Ultras:
         ConstantWorkerProductionTill: 0

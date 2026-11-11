@@ -80,6 +80,8 @@ class MyBot(AresBot):
 
         self._on_gas_toggle()
         num_per_gas: int = 3 if self._on_gas else 0
+        if self.opening_handler and hasattr(self.opening_handler, "workers_per_gas"):
+            num_per_gas = self.opening_handler.workers_per_gas
         self.register_behavior(Mining(workers_per_gas=num_per_gas))
 
         if self.opening_handler and hasattr(self.opening_handler, "on_step"):
