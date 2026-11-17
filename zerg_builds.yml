@@ -16,7 +16,8 @@ BuildChoices:
             # - RavagerRush
             # - LingDroneRush
             # - ProxyHatchVariation
-            - SwarmHosts
+            # - SwarmHosts
+            - BanelingBust
 
     Protoss:
         BotName: ProtossRace
@@ -32,6 +33,7 @@ BuildChoices:
             - DroneRush
             - DroneRushVariation
             - SwarmHosts
+            - BanelingBust
 
     Random:
         BotName: RandomRace
@@ -47,6 +49,7 @@ BuildChoices:
             - DroneRush
             - DroneRushVariation
             - SwarmHosts
+            - BanelingBust
 
     Terran:
         BotName: TerranRace
@@ -62,6 +65,7 @@ BuildChoices:
             - DroneRush
             - DroneRushVariation
             - SwarmHosts
+            - BanelingBust
 
     Zerg:
         BotName: ZergRace
@@ -77,8 +81,29 @@ BuildChoices:
             - DroneRush
             - DroneRushVariation
             - SwarmHosts
+            - BanelingBust
 
 Builds:
+    BanelingBust:
+        ConstantWorkerProductionTill: 0
+        OpeningBuildOrder:
+            - 12 drone
+            - 13 drone
+            - 14 gas
+            - 13 drone
+            - 14 cancel_gas
+            - 15 expand
+            - 14 gas
+            - 13 drone
+            - 14 spawningpool
+            - 13 drone
+            - 12 overlord
+            - 12 drone
+            - 12 queen
+            - 12 zerglingmovementspeed
+            - 12 zergling *4
+            - 12 banelingnest
+
     BroRush:
         ConstantWorkerProductionTill: 0
         OpeningBuildOrder:
