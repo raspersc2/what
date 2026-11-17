@@ -22,6 +22,8 @@ BuildChoices:
     Protoss:
         BotName: ProtossRace
         Cycle:
+            - SwarmHosts
+            - BanelingBust
             - OneBaseMuta
             - ProxyHatch
             - LingDroneRush
@@ -32,12 +34,12 @@ BuildChoices:
             - DroneRushFast
             - DroneRush
             - DroneRushVariation
-            - SwarmHosts
-            - BanelingBust
 
     Random:
         BotName: RandomRace
         Cycle:
+            - SwarmHosts
+            - BanelingBust
             - OneBaseMuta
             - ProxyHatch
             - LingDroneRush
@@ -48,12 +50,12 @@ BuildChoices:
             - DroneRushFast
             - DroneRush
             - DroneRushVariation
-            - SwarmHosts
-            - BanelingBust
 
     Terran:
         BotName: TerranRace
         Cycle:
+            - SwarmHosts
+            - BanelingBust
             - OneBaseMuta
             - ProxyHatch
             - LingDroneRush
@@ -64,12 +66,12 @@ BuildChoices:
             - DroneRushFast
             - DroneRush
             - DroneRushVariation
-            - SwarmHosts
-            - BanelingBust
 
     Zerg:
         BotName: ZergRace
         Cycle:
+            - SwarmHosts
+            - BanelingBust
             - OneBaseMuta
             - ProxyHatch
             - LingDroneRush
@@ -80,8 +82,6 @@ BuildChoices:
             - DroneRushFast
             - DroneRush
             - DroneRushVariation
-            - SwarmHosts
-            - BanelingBust
 
 Builds:
     BanelingBust:
